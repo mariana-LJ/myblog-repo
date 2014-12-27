@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 #include <sstream>
-#include "simpio.h"
 
 using namespace std;
 
@@ -24,27 +23,23 @@ string deleteDuplicates(string &s);
 string removeZeros(string &s);
 string adjustSize(string &s);
 
-int main()
+int main(int argc, char* argv[])
 {
    vector<std::string> surnameCodes;
    string soundexCode = "";
+   char * surname;
+
+   surname = argv[1];
 
    initSurnameCodes(surnameCodes);
 
-   cout << "Enter surname (RETURN to quit): ";
-   string surname = getLine();
-   while(surname.size() > 0){
-      cout << toUppercase(surname) << endl;
-      soundexCode = convertSurname(surnameCodes, surname);
-      soundexCode = deleteDuplicates(soundexCode);
-      soundexCode = removeZeros(soundexCode);
-      soundexCode = adjustSize(soundexCode);
-      printSoundex(surname, soundexCode);
-      cout << "Enter surname (RETURN to quit): ";
-      surname = getLine();
-   }
-  
-
+   cout << toUppercase(surname) << endl;
+   soundexCode = convertSurname(surnameCodes, surname);
+   soundexCode = deleteDuplicates(soundexCode);
+   soundexCode = removeZeros(soundexCode);
+   soundexCode = adjustSize(soundexCode);
+   printSoundex(surname, soundexCode);
+   
    return 0;
 }
 
