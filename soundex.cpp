@@ -1,5 +1,5 @@
 /*
-* soundex.cpp
+* g++ soundex.cpp -o soundex
 * Soundex algorithm produces a code for a surname based on the way it sounds.
 * All soundex codes have the same format: an uppercase letter followed 
 * by three digits.
@@ -15,25 +15,89 @@ typedef unsigned char uint8_t;
 
 using namespace std;
 
-void convertSurname(uint8_t *codes, char *surname);
+char * adjustInitialSize(char *surname);
 void initSurnameCodes(uint8_t *codes);
+void convertSurname(uint8_t *codes, char *surname);
 void deleteDuplicates(char *s);
 void removeZeros(char *s);
-void adjustSize(char *s);
+void adjustFinalSize(char *s);
 
 int main(int argc, char* argv[])
 {
    uint8_t surnameCodes[256];
-   char * surname = argv[1];
+   char * surname = NULL;
+   
+   if(argc == 2) {
+    surname = argv[1];
+   } else {
+    cout << "Ejemplo de uso: ./soundex mariana" << endl;
+    return 1;
+   }
 
    initSurnameCodes(surnameCodes);
    convertSurname(surnameCodes, surname);
    deleteDuplicates(surname);
    removeZeros(surname);
-   adjustSize(surname);
+   adjustFinalSize(surname);
    cout << surname << endl;
    
    return 0;
+}
+
+void initSurnameCodes(uint8_t *codes)
+{
+   codes['A'] = codes['a'] = 0;
+   codes['E'] = codes['e'] = 0;
+   codes['I'] = codes['i'] = 0;
+   codes['O'] = codes['o'] = 0;
+   codes['U'] = codes['u'] = 0;
+   codes['H'] = codes['h'] = 0;
+   codes['W'] = codes['w'] = 0;
+   codes['Y'] = codes['y'] = 0;
+   codes['B'] = codes['b'] = 1;
+   codes['F'] = codes['f'] = 1;
+   codes['P'] = codes['p'] = 1;
+   codes['V'] = codes['v'] = 1;
+   codes['C'] = codes['c'] = 2;
+   codes['G'] = codes['g'] = 2;
+   codes['J'] = codes['j'] = 2;
+   codes['K'] = codes['k'] = 2;
+   codes['Q'] = codes['q'] = 2;
+   codes['S'] = codes['s'] = 2;
+   codes['X'] = codes['x'] = 2;
+   codes['Z'] = codes['z'] = 2;
+   codes['D'] = codes['d'] = 3;
+   codes['T'] = codes['t'] = 3;
+   codes['M'] = codes['m'] = 4;
+   codes['N'] = codes['n'] = 4;
+   codes['L'] = codes['l'] = 5;
+   codes['R'] = codes['r'] = 6;
+}
+
+// adjustInitialSize makes sure that the initial array is 
+// at least 5 bytes, because the final string is 4 chars
+// + end of string
+// TODO: release memory at the end of program
+char * adjustInitialSize(char *surname) {
+  size_t len = strlen(surname);
+  
+  if (len < 4) {
+    char *newdata = new char[5];
+    // len+1 to also copy end of string
+    memcpy(newdata, surname, len+1);
+    surname = newdata;
+  }
+  
+  return surname;
+}
+
+void convertSurname(uint8_t *codes, char *surname)
+{
+   surname[0] = toupper(surname[0]);
+   
+   for(int i = 1; surname[i]; ++i) {
+      surname[i] = codes[surname[i]] + '0';
+   }
 }
 
 void deleteDuplicates(char *s){
@@ -64,7 +128,7 @@ void removeZeros(char *s){
    last = '\0';
 }
 
-void adjustSize(char *s){
+void adjustFinalSize(char *s){
    size_t len = strlen(s);
    const int correctSize = 4;
    
@@ -75,68 +139,3 @@ void adjustSize(char *s){
    s[correctSize] = '\0';
 }
 
-void initSurnameCodes(uint8_t *codes)
-{
-   codes['A'] = 0;
-   codes['E'] = 0;
-   codes['I'] = 0;
-   codes['O'] = 0;
-   codes['U'] = 0;
-   codes['H'] = 0;
-   codes['W'] = 0;
-   codes['Y'] = 0;
-   codes['B'] = 1;
-   codes['F'] = 1;
-   codes['P'] = 1;
-   codes['V'] = 1;
-   codes['C'] = 2;
-   codes['G'] = 2;
-   codes['J'] = 2;
-   codes['K'] = 2;
-   codes['Q'] = 2;
-   codes['S'] = 2;
-   codes['X'] = 2;
-   codes['Z'] = 2;
-   codes['D'] = 3;
-   codes['T'] = 3;
-   codes['M'] = 4;
-   codes['N'] = 4;
-   codes['L'] = 5;
-   codes['R'] = 6;
-
-   codes['a'] = 0;
-   codes['e'] = 0;
-   codes['i'] = 0;
-   codes['o'] = 0;
-   codes['u'] = 0;
-   codes['h'] = 0;
-   codes['w'] = 0;
-   codes['y'] = 0;
-   codes['b'] = 1;
-   codes['f'] = 1;
-   codes['p'] = 1;
-   codes['v'] = 1;
-   codes['c'] = 2;
-   codes['g'] = 2;
-   codes['j'] = 2;
-   codes['k'] = 2;
-   codes['q'] = 2;
-   codes['s'] = 2;
-   codes['x'] = 2;
-   codes['z'] = 2;
-   codes['d'] = 3;
-   codes['t'] = 3;
-   codes['m'] = 4;
-   codes['n'] = 4;
-   codes['l'] = 5;
-   codes['r'] = 6;
-}
-
-void convertSurname(uint8_t *codes, char *surname)
-{
-   surname[0] = toupper(surname[0]);
-   
-   for(int i = 1; surname[i]; ++i) {
-      surname[i] = codes[surname[i]] + '0';
-   }
-}
